@@ -17,7 +17,7 @@ type Data struct {
 type Query struct {
     Version    int
     Community  string
-    RequestId uint
+    RequestId  uint32
     OIDs       map[string]string
 }
 
@@ -27,7 +27,7 @@ func Get(data Query) ([]byte, error) {
 
     // encode the OIDs
     for oid, value := range data.OIDs {
-        oid_string  := Encode(0x6, EncodeOID(oid)) // we'll actually encode this properly later
+        oid_string  := Encode(0x6, EncodeOID(oid))
         oid_data    := value
         oid_binding  = append(oid_binding, Encode(0x30, append(oid_string, oid_data...))...)
     }
@@ -147,8 +147,8 @@ func GetResponse(data []byte) (Query, error) {
         return response, err
     }
 
-    response.RequestId  = uint(request_id_int)
-    response.OIDs        = make(map[string]string)
+    response.RequestId  = uint32(request_id_int)
+    response.OIDs       = make(map[string]string)
 
     oid_binds := Decode(snmp_payload[index:])
     for index = 0 ; index < oid_binds.datalen ; {
